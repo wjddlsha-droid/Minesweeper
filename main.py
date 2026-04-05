@@ -9,9 +9,10 @@ import random
 
 class Cell:
     """각 셀을 나타내는 클래스"""
-    def __init__(self, row, col, parent):
+    def __init__(self, row, col, parent, game):
         self.row = row
         self.col = col
+        self.game = game  # 게임 인스턴스 참조
         self.is_mine = False
         self.is_revealed = False
         self.is_flagged = False
@@ -34,12 +35,12 @@ class Cell:
     def on_left_click(self):
         """좌클릭 이벤트"""
         if not self.is_revealed and not self.is_flagged:
-            game.reveal_cell(self.row, self.col)
+            self.game.reveal_cell(self.row, self.col)
     
     def on_right_click(self):
         """우클릭 이벤트 (깃발)"""
         if not self.is_revealed:
-            game.toggle_flag(self.row, self.col)
+            self.game.toggle_flag(self.row, self.col)
     
     def render(self):
         """셀 렌더링"""
@@ -153,11 +154,11 @@ class MinesweeperGame:
         self.status_label.config(text="")
         self.mine_label.config(text=f"💣 지뢰: {self.MINES}")
         
-        # 셀 생성
+        # 셀 생성 (game 인스턴스 전달)
         for row in range(self.ROWS):
             row_cells = []
             for col in range(self.COLS):
-                cell = Cell(row, col, self.board_frame)
+                cell = Cell(row, col, self.board_frame, self)
                 cell.button.grid(row=row, column=col, padx=1, pady=1)
                 row_cells.append(cell)
             self.cells.append(row_cells)
